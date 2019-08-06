@@ -1,16 +1,12 @@
 package com.uadaf.sgexp
 
 import com.uadaf.sgexp.proxy.CommonProxy
-import net.minecraft.creativetab.CreativeTabs
-import net.minecraft.init.Items
-import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.ModMetadata
 import net.minecraftforge.fml.common.SidedProxy
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
-import org.apache.logging.log4j.Logger
 
 @Mod(modid = R.modid, name = R.name, version = R.version,
         modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter", modLanguage = "kotlin",
@@ -21,9 +17,6 @@ object SGExp {
 
     @SidedProxy(modId = R.modid, clientSide = "$modPackage.proxy.ClientProxy", serverSide = "$modPackage.proxy.CommonProxy")
     lateinit var proxy: CommonProxy
-
-
-
 
 
     @Mod.EventHandler

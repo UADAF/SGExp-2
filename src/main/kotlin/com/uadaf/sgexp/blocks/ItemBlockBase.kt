@@ -19,7 +19,5 @@ class ItemBlockBase(block: Block) : ItemBlock(block), IModelProvider {
     }
 
     //Don't remove this! It will break everything just 'cos Item#getMetadata returns zero by default!
-    override fun getMetadata(damage: Int): Int {
-        return damage
-    }
+    override fun getMetadata(damage: Int) = damage
 }

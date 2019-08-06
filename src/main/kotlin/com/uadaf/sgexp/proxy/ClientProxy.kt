@@ -1,11 +1,10 @@
 package com.uadaf.sgexp.proxy
 
-import com.uadaf.sgexp.registry.ModelRegistry
 import com.uadaf.sgexp.model.IModelProvider
+import com.uadaf.sgexp.registry.ModelRegistry
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
-import java.lang.IllegalStateException
 
 class ClientProxy : CommonProxy() {
 
