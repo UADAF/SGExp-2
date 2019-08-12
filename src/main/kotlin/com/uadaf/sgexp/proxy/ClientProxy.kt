@@ -11,15 +11,15 @@ class ClientProxy : CommonProxy() {
     private var modelRegistry: ModelRegistry? = ModelRegistry()
 
     override fun preInit(e: FMLPreInitializationEvent) {
-
+        super.preInit(e)
     }
 
     override fun init(e: FMLInitializationEvent) {
-
+        super.init(e)
     }
 
     override fun postInit(e: FMLPostInitializationEvent) {
-
+        super.postInit(e)
     }
 
     override fun regModel(provider: IModelProvider) {

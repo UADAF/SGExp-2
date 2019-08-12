@@ -1,12 +1,15 @@
 package com.uadaf.sgexp
 
 import com.uadaf.sgexp.proxy.CommonProxy
+import com.uadaf.sgexp.registry.WorldRegistry
+import net.minecraftforge.common.config.Configuration
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.ModMetadata
 import net.minecraftforge.fml.common.SidedProxy
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent
 
 @Mod(modid = R.modid, name = R.name, version = R.version,
         modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter", modLanguage = "kotlin",
@@ -18,11 +21,13 @@ object SGExp {
     @SidedProxy(modId = R.modid, clientSide = "$modPackage.proxy.ClientProxy", serverSide = "$modPackage.proxy.CommonProxy")
     lateinit var proxy: CommonProxy
 
+    lateinit var cfg: SGExpConfig
 
     @Mod.EventHandler
     fun preInit(e: FMLPreInitializationEvent) {
         setupModInfo(e.modMetadata)
         R.logger = e.modLog
+        cfg = SGExpConfig(Configuration(e.suggestedConfigurationFile))
         proxy.preInit(e)
     }
 
@@ -34,6 +39,11 @@ object SGExp {
     @Mod.EventHandler
     fun postInit(e: FMLPostInitializationEvent) {
         proxy.postInit(e)
+    }
+
+    @Mod.EventHandler
+    fun onServerStarted(e: FMLServerStartedEvent) {
+        WorldRegistry.initDims()
     }
 
     private fun setupModInfo(meta: ModMetadata) = with(meta) {
