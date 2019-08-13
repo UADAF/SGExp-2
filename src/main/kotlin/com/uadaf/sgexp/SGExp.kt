@@ -1,15 +1,13 @@
 package com.uadaf.sgexp
 
+import com.uadaf.sgexp.commands.SGExpCommands
 import com.uadaf.sgexp.proxy.CommonProxy
 import com.uadaf.sgexp.registry.WorldRegistry
 import net.minecraftforge.common.config.Configuration
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.ModMetadata
 import net.minecraftforge.fml.common.SidedProxy
-import net.minecraftforge.fml.common.event.FMLInitializationEvent
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent
+import net.minecraftforge.fml.common.event.*
 
 @Mod(modid = R.modid, name = R.name, version = R.version,
         modLanguageAdapter = "net.shadowfacts.forgelin.KotlinAdapter", modLanguage = "kotlin",
@@ -44,6 +42,11 @@ object SGExp {
     @Mod.EventHandler
     fun onServerStarted(e: FMLServerStartedEvent) {
         WorldRegistry.initDims()
+    }
+
+    @Mod.EventHandler
+    fun onServerStarting(e: FMLServerStartingEvent) {
+        e.registerServerCommand(SGExpCommands)
     }
 
     private fun setupModInfo(meta: ModMetadata) = with(meta) {

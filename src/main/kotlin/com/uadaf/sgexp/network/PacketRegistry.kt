@@ -1,10 +1,9 @@
 package com.uadaf.sgexp.network
 
 import com.uadaf.sgexp.R
-import com.uadaf.sgexp.SGExp
 import com.uadaf.sgexp.network.packets.SPacketRegisterDimension
+import com.uadaf.sgexp.network.packets.SPacketSetAddress
 import net.minecraft.entity.Entity
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraftforge.fml.common.network.NetworkRegistry
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage
@@ -19,11 +18,12 @@ object PacketRegistry {
     private var id = 0
     fun init() {
         reg(SPacketRegisterDimension.Handler, Side.CLIENT)
+        reg(SPacketSetAddress.Handler, Side.CLIENT)
     }
 
 
-    private inline fun <reified REQ : IMessage> reg(handler: IMessageHandler<REQ, *>, side: Side) {
-        network.registerMessage(handler, REQ::class.java, id++, side)
+    private inline fun <reified REQ : IMessage> reg(handler: IMessageHandler<REQ, *>, receiver: Side) {
+        network.registerMessage(handler, REQ::class.java, id++, receiver)
     }
 
     fun sendTo(packet: IMessage, player: EntityPlayerMP) {

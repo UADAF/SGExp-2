@@ -1,15 +1,18 @@
 package com.uadaf.sgexp.structure
 
 import com.uadaf.sgexp.R
+import com.uadaf.sgexp.registry.WorldRegistry
 import gcewing.sg.BaseOrientation
 import gcewing.sg.SGCraft
 import gcewing.sg.tileentity.DHDTE
 import gcewing.sg.tileentity.SGBaseTE
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
+import net.minecraft.crash.CrashReport
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.ReportedException
 import net.minecraft.util.Rotation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
@@ -33,8 +36,18 @@ object GateBuilder {
         curBlock.madd(x = -row.size)
     }
 
-    fun buildGate(world: World, basePos: BlockPos = BlockPos(0, 0, 0)): SGBaseTE? {
-        touchChunk(world)
+    fun makeNewWorld(): SGBaseTE {
+        val newWorld = WorldRegistry.addWorld()!!
+        val x = newWorld.rand.nextInt(3001) - 1500
+        val z = newWorld.rand.nextInt(3001) - 1500
+        val baseY = newWorld.getHeight(x, z)
+        return buildGate(newWorld, BlockPos(x, baseY, z))
+    }
+
+    fun buildGate(world: World, basePos: BlockPos = BlockPos(0, 0, 0)): SGBaseTE {
+        R.logger.info("Placing gate in dimension ${world.provider.dimension} at $basePos")
+        val sgChunk = world.getChunk(basePos)
+        world.chunkProvider.provideChunk(sgChunk.x, sgChunk.z)
         val curBlock = BlockPos.MutableBlockPos(basePos)
         while(world.getBlockState(curBlock).block != Blocks.AIR) {
             curBlock.madd(y = 1)
@@ -60,8 +73,6 @@ object GateBuilder {
         buildPlatform(world, gatePos)
         return tuneGate(world, gatePos)
     }
-
-    private fun touchChunk(world: World) = world.chunkProvider.provideChunk(0, 0)
 
 
     private fun buildPlatform(world: World, gatePos: BlockPos) {
@@ -92,10 +103,10 @@ object GateBuilder {
         }
     }
 
-    private fun tuneGate(world: World, gatePos: BlockPos): SGBaseTE? {
+    private fun tuneGate(world: World, gatePos: BlockPos): SGBaseTE {
         val gate = world.getTileEntity(gatePos)
         if(gate == null || gate !is SGBaseTE) {
-            R.logger.warn("Unable to find gate that was just placed at $gatePos")
+            throw ReportedException(CrashReport.makeCrashReport(IllegalStateException("Unable to find gate that was just placed at $gatePos"), "Something went wrong"))
         } else {
             SGCraft.sgBaseBlock.checkForVerticalMerge(world, gatePos)
             gate.update() //Ensure gate gets address
@@ -107,13 +118,13 @@ object GateBuilder {
         val dhdPos = gatePos.north(5)
         val dhd = world.getTileEntity(dhdPos)
         if(dhd == null || dhd !is DHDTE) {
-            R.logger.warn("Unable to find DHD that was just placed at $dhdPos")
+            throw ReportedException(CrashReport.makeCrashReport(IllegalStateException("Unable to find DHD that was just placed at $dhdPos"), "Something went wrong"))
         } else {
-            dhd.linkToStargate(gate as SGBaseTE)
+            dhd.linkToStargate(gate)
             dhd.setInventorySlotContents(0, ItemStack(SGCraft.naquadah))
             dhd.drawEnergyDouble(1.0) //Draw some energy, so naquadah can't be taken out
         }
-        return gate as? SGBaseTE
+        return gate
     }
     
 }
