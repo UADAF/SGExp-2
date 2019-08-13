@@ -11,6 +11,7 @@ import net.minecraft.world.WorldProvider
 import net.minecraftforge.common.DimensionManager
 import java.lang.IllegalStateException
 import com.uadaf.sgexp.R
+import com.uadaf.sgexp.dimensions.data.DimensionDescription
 import net.minecraft.world.WorldServer
 
 
@@ -33,7 +34,7 @@ object WorldRegistry {
 
     fun initDims() {
         val storage = DimensionStorage.getDimensionStorage(overworld)
-        for (id in storage.dims) {
+        for ((id, _) in storage.dims) {
             regDim(id)
             PacketRegistry.network.sendToAll(SPacketRegisterDimension(id))
         }
@@ -92,9 +93,9 @@ object WorldRegistry {
         if (!overworld.isRemote) {
             lastId = findFreeId()
             regDim(lastId)
-            val newWorld = touchSpawnChank(overworld, lastId)
             val storage = DimensionStorage.getDimensionStorage(overworld)
-            storage.addDimension(lastId)
+            storage.addDimension(lastId, DimensionDescription())
+            val newWorld = touchSpawnChank(overworld, lastId)
             storage.save()
             return newWorld
         }

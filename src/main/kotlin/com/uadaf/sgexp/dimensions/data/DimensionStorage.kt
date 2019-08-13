@@ -7,14 +7,14 @@ import net.minecraftforge.common.util.Constants
 
 class DimensionStorage(name: String) : AbstractWorldData<DimensionStorage>(name) {
 
-    val dims = mutableListOf<Int>()
+    val dims = mutableMapOf<Int, DimensionDescription>()
 
     override fun clear() {
         dims.clear()
     }
 
-    fun addDimension(id: Int) {
-        dims.add(id)
+    fun addDimension(id: Int, desc: DimensionDescription) {
+        dims[id] = desc
     }
 
     fun removeDimension(id: Int) {
@@ -27,15 +27,17 @@ class DimensionStorage(name: String) : AbstractWorldData<DimensionStorage>(name)
         for (i in 0 until lst.tagCount()) {
             val tc = lst.getCompoundTagAt(i)
             val id = tc.getInteger("id")
-            dims.add(id)
+            val desc = DimensionDescription.fromNBT(tc.getCompoundTag("desc"))
+            addDimension(id, desc)
         }
     }
 
     override fun writeToNBT(tagCompound: NBTTagCompound): NBTTagCompound {
         val lst = NBTTagList()
-        for (id in dims) {
+        for ((id, desc) in dims) {
             val tc = NBTTagCompound()
             tc.setInteger("id", id)
+            tc.setTag("desc", desc.toNBT())
             lst.appendTag(tc)
         }
         tagCompound.setTag("dimensions", lst)
