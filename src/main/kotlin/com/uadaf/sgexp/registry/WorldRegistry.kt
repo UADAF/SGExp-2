@@ -3,7 +3,6 @@ package com.uadaf.sgexp.registry
 import com.uadaf.sgexp.SGExp
 import com.uadaf.sgexp.dimensions.data.DimensionStorage
 import com.uadaf.sgexp.dimensions.TestWorldProvider
-import com.uadaf.sgexp.dimensions.TestWorldType
 import com.uadaf.sgexp.network.PacketRegistry
 import com.uadaf.sgexp.network.packets.SPacketRegisterDimension
 import net.minecraft.world.DimensionType
@@ -22,14 +21,12 @@ object WorldRegistry {
         get() = DimensionManager.getWorld(0)
 
     lateinit var testDimType: DimensionType
-    lateinit var testWorldType: TestWorldType
 
     var lastId = findFreeId()
 
     fun init() {
         with(SGExp.cfg) {
             testDimType = reg<TestWorldProvider>(minId)
-            testWorldType = TestWorldType()
         }
 
     }
