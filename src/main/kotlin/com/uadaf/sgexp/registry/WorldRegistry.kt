@@ -11,6 +11,10 @@ import net.minecraft.world.World
 import net.minecraft.world.WorldProvider
 import net.minecraftforge.common.DimensionManager
 import java.lang.IllegalStateException
+import com.uadaf.sgexp.R
+import net.minecraft.world.WorldServer
+
+
 
 object WorldRegistry {
 
@@ -24,7 +28,7 @@ object WorldRegistry {
 
     fun init() {
         with(SGExp.cfg) {
-            testDimType = reg<TestWorldProvider>(testDimId)
+            testDimType = reg<TestWorldProvider>(minId)
             testWorldType = TestWorldType()
         }
 
@@ -50,10 +54,11 @@ object WorldRegistry {
     }
 
     private fun findFreeId(): Int {
-        for (i in 2..Int.MAX_VALUE) {
+        val allowNeg = SGExp.cfg.allowNegative
+        for (i in SGExp.cfg.minId..Int.MAX_VALUE) {
             if (!DimensionManager.isDimensionRegistered(i)) {
                 return i
-            } else if(!DimensionManager.isDimensionRegistered(-i)) {
+            } else if(allowNeg && !DimensionManager.isDimensionRegistered(-i)) {
                 return -i
             }
         }
@@ -70,14 +75,33 @@ object WorldRegistry {
         return dtype
     }
 
-    fun addWorld() {
+    private fun touchSpawnChank(world: World, id: Int): WorldServer {
+        val worldServerForDimension = world.minecraftServer!!.getWorld(id)
+        val providerServer = worldServerForDimension.chunkProvider
+        if (!providerServer.chunkExists(0, 0)) {
+            try {
+                providerServer.provideChunk(0, 0)
+                providerServer.chunkGenerator.populate(0, 0)
+            } catch (e: Exception) {
+                R.logger.error("Something went wrong during creation of the dimension!")
+                e.printStackTrace()
+                // We catch this exception to make sure our dimension tab is at least ok.
+            }
+        }
+        return worldServerForDimension
+    }
+
+    fun addWorld(): WorldServer? {
         if (!overworld.isRemote) {
             lastId = findFreeId()
             regDim(lastId)
+            val newWorld = touchSpawnChank(overworld, lastId)
             val storage = DimensionStorage.getDimensionStorage(overworld)
             storage.addDimension(lastId)
             storage.save()
+            return newWorld
         }
+        return null
     }
 
 }
