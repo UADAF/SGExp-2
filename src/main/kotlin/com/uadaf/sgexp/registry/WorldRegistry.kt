@@ -13,7 +13,7 @@ import java.lang.IllegalStateException
 import com.uadaf.sgexp.R
 import com.uadaf.sgexp.dimensions.data.DimensionDescription
 import net.minecraft.world.WorldServer
-
+import kotlin.random.asKotlinRandom
 
 
 object WorldRegistry {
@@ -73,9 +73,8 @@ object WorldRegistry {
         return dtype
     }
 
-    private fun touchSpawnChank(world: World, id: Int): WorldServer {
-        val worldServerForDimension = world.minecraftServer!!.getWorld(id)
-        val providerServer = worldServerForDimension.chunkProvider
+    private fun touchSpawnChank(world: WorldServer) {
+        val providerServer = world.chunkProvider
         if (!providerServer.chunkExists(0, 0)) {
             try {
                 providerServer.provideChunk(0, 0)
@@ -86,16 +85,16 @@ object WorldRegistry {
                 // We catch this exception to make sure our dimension tab is at least ok.
             }
         }
-        return worldServerForDimension
     }
 
     fun addWorld(): WorldServer? {
         if (!overworld.isRemote) {
             lastId = findFreeId()
             regDim(lastId)
+            val newWorld = overworld.minecraftServer!!.getWorld(lastId)
             val storage = DimensionStorage.getDimensionStorage(overworld)
-            storage.addDimension(lastId, DimensionDescription())
-            val newWorld = touchSpawnChank(overworld, lastId)
+            storage.addDimension(lastId, DimensionDescription.random(newWorld.rand.asKotlinRandom()))
+            touchSpawnChank(newWorld)
             storage.save()
             return newWorld
         }

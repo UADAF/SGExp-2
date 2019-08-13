@@ -47,7 +47,6 @@ object GateBuilder {
     }
 
     fun buildGate(world: World, basePos: BlockPos = BlockPos(0, 0, 0)): SGBaseTE {
-        R.logger.info("Placing gate in dimension ${world.provider.dimension} at $basePos")
         val sgChunk = world.getChunk(basePos)
         world.chunkProvider.provideChunk(sgChunk.x, sgChunk.z)
         val curBlock = BlockPos.MutableBlockPos(basePos)
