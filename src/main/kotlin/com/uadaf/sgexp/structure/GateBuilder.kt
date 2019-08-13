@@ -16,6 +16,8 @@ import net.minecraft.util.ReportedException
 import net.minecraft.util.Rotation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 object GateBuilder {
 
@@ -38,8 +40,8 @@ object GateBuilder {
 
     fun makeNewWorld(): SGBaseTE {
         val newWorld = WorldRegistry.addWorld()!!
-        val x = newWorld.rand.nextInt(3001) - 1500
-        val z = newWorld.rand.nextInt(3001) - 1500
+        val x = Random.nextInt(-1500..1500)
+        val z = Random.nextInt(-1500..1500)
         val baseY = newWorld.getHeight(x, z)
         return buildGate(newWorld, BlockPos(x, baseY, z))
     }
