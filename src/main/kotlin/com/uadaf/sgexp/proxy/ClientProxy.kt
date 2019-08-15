@@ -2,6 +2,7 @@ package com.uadaf.sgexp.proxy
 
 import com.uadaf.sgexp.R
 import com.uadaf.sgexp.model.IModelProvider
+import com.uadaf.sgexp.registry.EntityRegistry
 import com.uadaf.sgexp.registry.ModelRegistry
 import net.minecraftforge.client.model.obj.OBJLoader
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -15,6 +16,7 @@ class ClientProxy : CommonProxy() {
     override fun preInit(e: FMLPreInitializationEvent) {
         super.preInit(e)
         OBJLoader.INSTANCE.addDomain(R.modid)
+        EntityRegistry.initRenderers()
     }
 
     override fun init(e: FMLInitializationEvent) {
