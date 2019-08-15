@@ -2,6 +2,7 @@ package com.uadaf.sgexp.registry
 
 import com.uadaf.sgexp.SGExp
 import com.uadaf.sgexp.blocks.ItemBlockBase
+import com.uadaf.sgexp.items.StaffWeapon
 import com.uadaf.sgexp.items.AddressPlate
 import com.uadaf.sgexp.items.TestItem
 import com.uadaf.sgexp.model.IModelProvider
@@ -18,6 +19,7 @@ object ItemRegistry {
 
     val testItem = TestItem
     val addressPlate = AddressPlate
+    val staffWeapon = StaffWeapon
 
     private val itemBlocks = mutableMapOf<Block, ItemBlock>()
 

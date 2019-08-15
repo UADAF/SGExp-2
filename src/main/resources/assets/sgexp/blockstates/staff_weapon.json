@@ -1,0 +1,29 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "sgexp:staff_weapon.obj",
+    "transform": {
+      "thirdperson_lefthand": {
+        "rotation": [75, 0, 0],
+        "scale": [1.2, 1.2, 1],
+        "translation": [0, 0, -0.2]
+      },
+      "firstperson_righthand": {
+        "rotation": [-82.5, 0, -7.5],
+        "translation": [0, 0, 0.5]
+      },
+      "firstperson_lefthand": {
+        "translation": [0, -0.2, 0]
+      },
+      "gui": {
+        "scale": [0.64, 0.64, 0.64],
+        "rotation": [0, 180, 45],
+        "translation": [-0.15, -0.15, 0]
+      }
+    }
+  },
+  "variants": {
+    "inventory": [{
+    }]
+  }
+}
