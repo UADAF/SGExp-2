@@ -4,6 +4,7 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.world.World
 import net.minecraftforge.common.util.Constants
+import kotlin.random.Random
 
 class DimensionStorage(name: String) : AbstractWorldData<DimensionStorage>(name) {
 
@@ -27,7 +28,7 @@ class DimensionStorage(name: String) : AbstractWorldData<DimensionStorage>(name)
         for (i in 0 until lst.tagCount()) {
             val tc = lst.getCompoundTagAt(i)
             val id = tc.getInteger("id")
-            val desc = DimensionDescription.fromNBT(tc.getCompoundTag("desc"))
+            val desc = DimensionDescription.fromNBT(tc.getCompoundTag("desc"), Random)
             addDimension(id, desc)
         }
     }

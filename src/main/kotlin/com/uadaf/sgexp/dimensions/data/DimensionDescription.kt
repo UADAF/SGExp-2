@@ -56,7 +56,14 @@ class DimensionDescription {
     }
 
     companion object {
-        fun fromNBT(nbt: NBTTagCompound) = DimensionDescription().apply { readFromNBT(nbt) }
+        fun fromNBT(nbt: NBTTagCompound, rand: Random) = DimensionDescription().apply {
+            readFromNBT(nbt)
+            for (f in FeatureRegistry.features) {
+                if (f !in features) {
+                    setDefaultFeature(rand, f.newInstance())
+                }
+            }
+        }
 
         fun random(rand: Random) = DimensionDescription().apply {
             for (f in FeatureRegistry.features) {
