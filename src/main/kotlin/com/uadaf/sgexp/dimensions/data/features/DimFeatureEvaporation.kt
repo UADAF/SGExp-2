@@ -4,7 +4,6 @@ import net.minecraft.nbt.NBTTagCompound
 import kotlin.random.Random
 
 class DimFeatureEvaporation : DimFeatureBase {
-    override val type = DimFeatureType.WATER_EVAPORATAION
 
     var doesWaterEvaporate: Boolean = false
         private set
@@ -17,7 +16,7 @@ class DimFeatureEvaporation : DimFeatureBase {
         doesWaterEvaporate = getBoolean("eva")
     }
 
-    override fun fillRandom(rand: Random) {
+    override fun fillDefault(rand: Random) {
         doesWaterEvaporate = rand.nextBoolean()
     }
 

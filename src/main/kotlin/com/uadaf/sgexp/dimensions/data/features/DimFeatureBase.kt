@@ -5,8 +5,6 @@ import kotlin.random.Random
 
 interface DimFeatureBase {
 
-    val type: DimFeatureType
-
     fun NBTTagCompound.internalWriteToNBT()
 
     fun writeToNBT(nbt: NBTTagCompound): NBTTagCompound {
@@ -20,6 +18,6 @@ interface DimFeatureBase {
         nbt.internalReadFromNBT()
     }
 
-    fun fillRandom(rand: Random)
+    fun fillDefault(rand: Random)
 
 }

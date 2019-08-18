@@ -5,36 +5,31 @@ import com.uadaf.sgexp.dimensions.data.features.*
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
 import net.minecraftforge.common.util.Constants
-import java.lang.IllegalStateException
-import java.lang.StringBuilder
 import kotlin.random.Random
 
 class DimensionDescription {
 
-    val features: MutableMap<DimFeatureType, MutableList<DimFeatureBase>> = mutableMapOf()
+    val features: MutableMap<Class<out DimFeatureBase>, DimFeatureBase> = mutableMapOf()
 
-    inline fun <reified T : DimFeatureBase> getFeature(type: DimFeatureType) =
-            features[type]?.firstOrNull() as? T ?: throw IllegalStateException("Feature with featureType $type and class ${T::class.simpleName}")
+    inline fun <reified T : DimFeatureBase> get() = features[T::class.java] as T
 
-    fun addFeature(f: DimFeatureBase) {
-        features.computeIfAbsent(f.type) { mutableListOf() }.add(f)
+    fun setFeature(feature: DimFeatureBase) {
+        features[feature.javaClass] = feature
     }
 
-    fun addRandomFeature(rand: Random, f: DimFeatureBase) {
-        f.fillRandom(rand)
-        addFeature(f)
+    fun setDefaultFeature(rand: Random, f: DimFeatureBase) {
+        f.fillDefault(rand)
+        setFeature(f)
     }
 
     fun writeToNBT(nbt: NBTTagCompound) = nbt.apply {
         val lst = NBTTagList()
         setTag("features", lst)
-        for ((_, ff) in features) {
-            for (f in ff) {
-                val tag = NBTTagCompound()
-                tag.setString("class", f.javaClass.name)
-                tag.setTag("feature", f.writeToNBT(NBTTagCompound()))
-                lst.appendTag(tag)
-            }
+        for ((_, f) in features) {
+            val tag = NBTTagCompound()
+            tag.setString("class", f.javaClass.name)
+            tag.setTag("feature", f.writeToNBT(NBTTagCompound()))
+            lst.appendTag(tag)
         }
     }
 
@@ -46,15 +41,15 @@ class DimensionDescription {
             val clazz = Class.forName(nn.getString("class")).asSubclass(DimFeatureBase::class.java)
             val feature = clazz.newInstance()
             feature.readFromNBT(nn.getCompoundTag("feature"))
-            features.computeIfAbsent(feature.type) { mutableListOf() }.add(feature)
+            setFeature(feature)
         }
     }
 
     override fun toString(): String {
         val builder = StringBuilder()
         builder.append("[\n")
-        for ((type, ff) in features) {
-            builder.append(type).append(": {").append(ff.joinToString(",")).append("}\n")
+        for (ff in features.values) {
+            builder.append(ff.javaClass.simpleName).append(": {").append(ff.toString()).append("}\n")
         }
         builder.append(']')
         return builder.toString()
@@ -64,10 +59,9 @@ class DimensionDescription {
         fun fromNBT(nbt: NBTTagCompound) = DimensionDescription().apply { readFromNBT(nbt) }
 
         fun random(rand: Random) = DimensionDescription().apply {
-            addRandomFeature(rand, DimFeatureBiome())
-            addRandomFeature(rand, DimFeatureSkyColor())
-            addRandomFeature(rand, DimFeatureEvaporation())
-            addRandomFeature(rand, DimFeatureRain())
+            for (f in FeatureRegistry.features) {
+                setDefaultFeature(rand, f.newInstance())
+            }
             R.logger.info("Creating dimension $this")
         }
 

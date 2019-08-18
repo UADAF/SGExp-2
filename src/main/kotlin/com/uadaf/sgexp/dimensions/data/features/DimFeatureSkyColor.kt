@@ -5,8 +5,6 @@ import kotlin.random.Random
 
 class DimFeatureSkyColor : DimFeatureBase {
 
-    override val type = DimFeatureType.SKY_COLOR
-
     var color: Int = -1
         private set
 
@@ -18,7 +16,7 @@ class DimFeatureSkyColor : DimFeatureBase {
         color = getInteger("color")
     }
 
-    override fun fillRandom(rand: Random) {
+    override fun fillDefault(rand: Random) {
         color = rand.nextInt(0xFFFFFF + 1)
     }
 

@@ -1,6 +1,9 @@
 package com.uadaf.sgexp.structure
 
 import com.uadaf.sgexp.R
+import com.uadaf.sgexp.dimensions.data.DimensionStorage
+import com.uadaf.sgexp.dimensions.data.features.DimFeaturePegasusGate
+import com.uadaf.sgexp.dimensions.data.features.DimFeatureUndergroundGate
 import com.uadaf.sgexp.registry.WorldRegistry
 import gcewing.sg.BaseOrientation
 import gcewing.sg.SGCraft
@@ -42,11 +45,19 @@ object GateBuilder {
         val newWorld = WorldRegistry.addWorld()!!
         val x = Random.nextInt(-1500..1500)
         val z = Random.nextInt(-1500..1500)
+        val chunk = newWorld.chunkProvider.provideChunk(x shr 4, z shr 4)
+        chunk.onLoad()
         val baseY = newWorld.getHeight(x, z)
-        return buildGate(newWorld, BlockPos(x, baseY, z))
+        val desc = DimensionStorage.getDimensionStorage(newWorld).dims[newWorld.provider.dimension]!!
+        val res = if (desc.get<DimFeatureUndergroundGate>().isUnderground) {
+            BlockPos(x, 0, z)
+        } else {
+            BlockPos(x, baseY, z)
+        }
+        return buildGate(newWorld, res, desc.get<DimFeaturePegasusGate>().pegasusGate)
     }
 
-    fun buildGate(world: World, basePos: BlockPos = BlockPos(0, 0, 0)): SGBaseTE {
+    fun buildGate(world: World, basePos: BlockPos = BlockPos(0, 0, 0), pegasusGate: Boolean = false): SGBaseTE {
         val sgChunk = world.getChunk(basePos)
         world.chunkProvider.provideChunk(sgChunk.x, sgChunk.z)
         val curBlock = BlockPos.MutableBlockPos(basePos)
@@ -72,7 +83,7 @@ object GateBuilder {
         place(curBlock.move(EnumFacing.UP), world, ring, null, null, null, ring)
         place(curBlock.move(EnumFacing.UP), world, chevron, ring, chevron, ring, chevron)
         buildPlatform(world, gatePos)
-        return tuneGate(world, gatePos)
+        return tuneGate(world, gatePos, pegasusGate)
     }
 
 
@@ -104,7 +115,7 @@ object GateBuilder {
         }
     }
 
-    private fun tuneGate(world: World, gatePos: BlockPos): SGBaseTE {
+    private fun tuneGate(world: World, gatePos: BlockPos, pegasusGate: Boolean): SGBaseTE {
         val gate = world.getTileEntity(gatePos)
         if(gate == null || gate !is SGBaseTE) {
             throw ReportedException(CrashReport.makeCrashReport(IllegalStateException("Unable to find gate that was just placed at $gatePos"), "Something went wrong"))
@@ -112,6 +123,9 @@ object GateBuilder {
             SGCraft.sgBaseBlock.checkForVerticalMerge(world, gatePos)
             gate.update() //Ensure gate gets address
             gate.applyChevronUpgrade(ItemStack(SGCraft.sgChevronUpgrade), null)
+            if (pegasusGate) {
+                gate.applyPegasusUpgrade(ItemStack(SGCraft.pegasus_upgrade), null)
+            }
             for(i in 0 until gate.sizeInventory) {
                 gate.setInventorySlotContents(i, ItemStack(Blocks.STONEBRICK))
             }

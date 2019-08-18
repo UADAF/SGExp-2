@@ -3,25 +3,25 @@ package com.uadaf.sgexp.dimensions.data.features
 import net.minecraft.nbt.NBTTagCompound
 import kotlin.random.Random
 
-class DimFeatureRain : DimFeatureBase {
+class DimFeatureUndergroundGate : DimFeatureBase {
 
-    var canRain: Boolean = false
+    var isUnderground: Boolean = false
         private set
-
     override fun NBTTagCompound.internalWriteToNBT() {
-        setBoolean("rain", canRain)
+        setBoolean("isUnderground", isUnderground)
     }
 
     override fun NBTTagCompound.internalReadFromNBT() {
-        canRain = getBoolean("rain")
+        isUnderground = getBoolean("isUnderground")
     }
 
     override fun fillDefault(rand: Random) {
-        canRain = rand.nextBoolean()
+        isUnderground = rand.nextFloat() < 0.1f //TODO: Move to config?
     }
 
     override fun toString(): String {
-        return "can_rain=$canRain"
+        return "isUnderground=$isUnderground"
     }
+
 
 }

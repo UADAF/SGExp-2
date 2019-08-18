@@ -11,8 +11,6 @@ class DimFeatureBiome : DimFeatureBase {
     lateinit var biome: Biome
         private set
 
-    override val type = DimFeatureType.BIOME
-
     override fun NBTTagCompound.internalWriteToNBT() {
         setInteger("biome", Biome.getIdForBiome(biome))
     }
@@ -21,7 +19,7 @@ class DimFeatureBiome : DimFeatureBase {
         biome = Biome.getBiome(getInteger("biome"))!!
     }
 
-    override fun fillRandom(rand: Random) {
+    override fun fillDefault(rand: Random) {
         val availableBiomes = listOf(Biomes.DESERT, Biomes.DEEP_OCEAN, Biomes.PLAINS, Biomes.TAIGA)
         biome = availableBiomes.random(rand)
     }
