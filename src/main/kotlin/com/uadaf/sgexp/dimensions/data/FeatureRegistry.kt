@@ -23,5 +23,6 @@ object FeatureRegistry {
         reg<DimFeatureSkyColor>()
         reg<DimFeatureUndergroundGate>()
         reg<DimFeaturePegasusGate>()
+        reg<DimFeaturePopulationType>()
     }
 }
